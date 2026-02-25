@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free AI Readiness Assessment | PromptReady</title>
+  <meta name="description" content="Is your website visible to ChatGPT, Perplexity, and Google AI? Get a free AI Readiness score and a prioritized action plan — delivered to your inbox in minutes." />
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand': '#4148FF',
+            'brand-hover': '#3B40E6',
+            'brand-dark': '#1A1A1A',
+          },
+          fontFamily: {
+            'jetbrains': ['JetBrains Mono', 'monospace'],
+            'dm-sans': ['DM Sans', 'sans-serif'],
+            'dm-serif': ['DM Serif Display', 'serif'],
+            'garamond': ['EB Garamond', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    .jetbrains-spacing { letter-spacing: -0.05em; word-spacing: -0.2em; }
+    .tracking-custom { letter-spacing: -0.05em; }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    .faq-answer.open { max-height: 500px; }
+    .faq-icon { transition: transform 0.3s ease; display: inline-block; line-height: 1; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    html { scroll-behavior: smooth; }
+    input:focus, select:focus, textarea:focus { outline: none; }
+  </style>
+</head>
+<body class="bg-white text-[#1A1A1A] font-dm-sans" style="letter-spacing:-0.05em;">
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="sticky top-0 z-50 bg-white border-b border-gray-200">
+    <div class="container mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+      <a href="#" class="font-jetbrains font-bold text-xl md:text-2xl" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+        <span class="text-[#4148FF]">Prompt</span><span class="text-[#1A1A1A]">Ready</span>
+      </a>
+      <a href="#assessment-form" class="bg-[#4148FF] hover:bg-[#3B40E6] text-white px-5 md:px-8 py-2.5 md:py-3 rounded-[14px] text-sm md:text-base transition-all duration-200 hover:translate-y-[1px] font-dm-sans" style="letter-spacing:-0.05em;">
+        Get Free Assessment
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="py-16 md:py-28 px-4">
+    <div class="container mx-auto max-w-5xl text-center">
+
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-4 py-2 mb-8">
+        <span class="w-2 h-2 rounded-full bg-[#4148FF] shrink-0"></span>
+        <span class="font-dm-sans text-sm text-[#1A1A1A]" style="letter-spacing:-0.05em;">Free AI Readiness Assessment</span>
+      </div>
+
+      <!-- H1 -->
+      <h1 class="font-jetbrains font-bold text-4xl md:text-6xl lg:text-7xl leading-tight text-[#1A1A1A] mb-6" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+        Your SEO Is Working.<br/>
+        <span class="text-[#4148FF]">AI Can't See You.</span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="font-dm-sans text-lg md:text-2xl leading-relaxed max-w-3xl mx-auto text-[#1A1A1A] mb-10" style="letter-spacing:-0.05em;">
+        Gartner predicts a 50% drop in organic search traffic by 2028. Companies are already reporting 40% drops. Find out how visible your website is to ChatGPT, Perplexity, and Google AI — and get a concrete plan to fix it.
+      </p>
+
+      <!-- CTA -->
+      <a href="#assessment-form" class="inline-block bg-[#4148FF] hover:bg-[#3B40E6] text-white px-8 md:px-16 py-4 md:py-6 rounded-[14px] font-dm-sans text-base md:text-xl font-semibold transition-all duration-200 hover:translate-y-[1px] mb-10" style="letter-spacing:-0.05em;">
+        Get My Free AI Score
+      </a>
+
+      <!-- Trust strip -->
+      <div class="flex flex-wrap justify-center gap-6 md:gap-10 text-sm text-gray-500 font-dm-sans" style="letter-spacing:-0.05em;">
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[#4148FF] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          100% Free
+        </span>
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[#4148FF] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          2-minute form
+        </span>
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[#4148FF] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          25+ criteria analyzed
+        </span>
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[#4148FF] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Report delivered to inbox
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STATS BAR ===================== -->
+  <section class="py-12 md:py-16 px-4 bg-gray-50 border-y border-gray-200">
+    <div class="container mx-auto max-w-5xl">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="font-jetbrains font-bold text-4xl md:text-5xl text-[#4148FF] mb-2" style="letter-spacing:-0.05em;word-spacing:-0.2em;">50%</div>
+          <div class="font-dm-sans text-sm md:text-base text-gray-600 mb-1" style="letter-spacing:-0.05em;">Predicted drop in organic traffic by 2028</div>
+          <div class="font-garamond italic text-xs text-gray-400">Source: Gartner</div>
+        </div>
+        <div>
+          <div class="font-jetbrains font-bold text-4xl md:text-5xl text-[#4148FF] mb-2" style="letter-spacing:-0.05em;word-spacing:-0.2em;">40%</div>
+          <div class="font-dm-sans text-sm md:text-base text-gray-600 mb-1" style="letter-spacing:-0.05em;">Traffic drops already reported since AI Overviews</div>
+          <div class="font-garamond italic text-xs text-gray-400">Source: Seer Interactive</div>
+        </div>
+        <div>
+          <div class="font-jetbrains font-bold text-4xl md:text-5xl text-[#4148FF] mb-2" style="letter-spacing:-0.05em;word-spacing:-0.2em;">3×</div>
+          <div class="font-dm-sans text-sm md:text-base text-gray-600 mb-1" style="letter-spacing:-0.05em;">Higher conversion rate from AI citation vs. search</div>
+          <div class="font-garamond italic text-xs text-gray-400">Source: Otterly.AI</div>
+        </div>
+        <div>
+          <div class="font-jetbrains font-bold text-4xl md:text-5xl text-[#4148FF] mb-2" style="letter-spacing:-0.05em;word-spacing:-0.2em;">2–7</div>
+          <div class="font-dm-sans text-sm md:text-base text-gray-600 mb-1" style="letter-spacing:-0.05em;">Domains cited per AI response vs. 10 blue links</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROBLEM ===================== -->
+  <section class="py-16 md:py-24 px-4">
+    <div class="container mx-auto max-w-4xl">
+      <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">What changed</p>
+      <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1A1A1A] mb-8" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+        The rules of search just changed.<br/>Most websites missed the memo.
+      </h2>
+      <div class="space-y-5 font-dm-sans text-base md:text-xl text-[#1A1A1A] leading-relaxed max-w-3xl" style="letter-spacing:-0.05em;">
+        <p>Search used to reward the websites that ranked highest. Users clicked a link, visited your site, and you won the visit.</p>
+        <p>AI engines work differently. When someone asks ChatGPT, Perplexity, or Google AI Overviews a question in your industry, they don't show ten blue links. They generate one answer — with two to seven cited sources.</p>
+        <p class="font-semibold">If you're not one of those sources, you don't exist.</p>
+        <p>The problem isn't that your content is bad. The problem is that it was built for humans — and AI engines evaluate websites by a completely different set of rules. Your most valuable expert content may be sitting in a library with no door.</p>
+        <p>Every search on ChatGPT in your industry that doesn't cite you is a missed opportunity and an erosion of your digital authority — regardless of where you rank on Google.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== THREE GAPS ===================== -->
+  <section class="py-16 md:py-24 px-4 bg-gray-50">
+    <div class="container mx-auto max-w-5xl">
+      <div class="text-center mb-12">
+        <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">Why you're invisible</p>
+        <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1A1A1A] mb-4" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          Three fixable reasons<br/>AI ignores your website.
+        </h2>
+        <p class="font-dm-sans text-base md:text-xl text-gray-600 max-w-2xl mx-auto" style="letter-spacing:-0.05em;">
+          None of these require rebuilding your site. All of them require knowing they exist.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
+          <div class="w-10 h-10 rounded-full bg-[#4148FF] text-white font-jetbrains font-bold flex items-center justify-center text-base mb-5 shrink-0" style="letter-spacing:-0.05em;">1</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">Your content is written for humans, not machines</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">
+            AI favors answer-first content: direct responses in the first 50 words, structured in lists, tables, and Q&A headings. A well-written blog post that buries the answer in paragraph four gets skipped entirely.
+          </p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
+          <div class="w-10 h-10 rounded-full bg-[#4148FF] text-white font-jetbrains font-bold flex items-center justify-center text-base mb-5 shrink-0" style="letter-spacing:-0.05em;">2</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">Your brand isn't a recognized entity</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">
+            Google and AI engines understand the web as a network of entities — people, organizations, products. Without Schema markup, your website is an anonymous block of text. There's no clear machine-readable signal of who you are.
+          </p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
+          <div class="w-10 h-10 rounded-full bg-[#4148FF] text-white font-jetbrains font-bold flex items-center justify-center text-base mb-5 shrink-0" style="letter-spacing:-0.05em;">3</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">AI can't verify your authority</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">
+            AI engines don't trust — they validate. They look for author credentials, citations from recognized publications, and mentions in trusted communities like Reddit and Quora. Without those signals, they default to whoever has them.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DARK: WHAT YOU GET ===================== -->
+  <section class="py-16 md:py-24 px-4 bg-[#1A1A1A]">
+    <div class="container mx-auto max-w-5xl">
+      <div class="text-center mb-12">
+        <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">The assessment</p>
+        <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-4" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          Know exactly where you stand.
+        </h2>
+        <p class="font-dm-sans text-base md:text-xl text-gray-400 max-w-3xl mx-auto" style="letter-spacing:-0.05em;">
+          We analyze your website across the same 4 dimensions AI engines use to decide what to recommend — and give you a prioritized plan to improve.
+        </p>
+      </div>
+
+      <!-- 4 Dimensions -->
+      <div class="grid md:grid-cols-2 gap-5 mb-12">
+        <div class="border border-gray-700 rounded-2xl p-6 md:p-8">
+          <h3 class="font-dm-serif font-bold text-lg md:text-2xl text-white mb-4">Answer-Shaped Content</h3>
+          <ul class="space-y-2 font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">
+            <li>→ Is your answer in the first 50 words?</li>
+            <li>→ Are Q&A headings (H2/H3) used correctly?</li>
+            <li>→ Are lists, tables, and structured formats in place?</li>
+            <li>→ Do you have original, citable data or statistics?</li>
+          </ul>
+        </div>
+        <div class="border border-gray-700 rounded-2xl p-6 md:p-8">
+          <h3 class="font-dm-serif font-bold text-lg md:text-2xl text-white mb-4">Technical AI Foundation</h3>
+          <ul class="space-y-2 font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">
+            <li>→ Organization Schema present and validated?</li>
+            <li>→ Article / BlogPosting markup on content pages?</li>
+            <li>→ FAQPage Schema for question-answer content?</li>
+            <li>→ Brand entity consistent and clearly defined?</li>
+          </ul>
+        </div>
+        <div class="border border-gray-700 rounded-2xl p-6 md:p-8">
+          <h3 class="font-dm-serif font-bold text-lg md:text-2xl text-white mb-4">Authority & Trust Signals</h3>
+          <ul class="space-y-2 font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">
+            <li>→ Detailed author bios with visible credentials?</li>
+            <li>→ Citations from recognized external publications?</li>
+            <li>→ Brand mentions in Reddit, Quora, or niche forums?</li>
+            <li>→ E-E-A-T signals visible and machine-readable?</li>
+          </ul>
+        </div>
+        <div class="border border-gray-700 rounded-2xl p-6 md:p-8">
+          <h3 class="font-dm-serif font-bold text-lg md:text-2xl text-white mb-4">Crawlability & Access</h3>
+          <ul class="space-y-2 font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">
+            <li>→ Site speed and HTTPS status</li>
+            <li>→ Crawl waste and unnecessary indexation blockers</li>
+            <li>→ Last-updated dates visible on content pages</li>
+            <li>→ No technical signals blocking AI crawlers</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Report contents -->
+      <div class="border-t border-gray-700 pt-10">
+        <h3 class="font-jetbrains font-bold text-lg md:text-2xl text-white mb-8 text-center" style="letter-spacing:-0.05em;word-spacing:-0.2em;">Your report includes:</h3>
+        <div class="grid md:grid-cols-3 gap-5">
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">AI Readiness Score out of 100, broken down by dimension</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">Page-by-page recommendations for your highest-priority content</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">Quick wins you can action this week</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">30/60/90-day implementation roadmap</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">Gaps your competitors may already be exploiting</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-[#4148FF] mt-0.5 shrink-0 font-bold">→</span>
+            <p class="font-dm-sans text-sm md:text-base text-gray-400" style="letter-spacing:-0.05em;">Shareable report delivered directly to your inbox</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="py-16 md:py-24 px-4">
+    <div class="container mx-auto max-w-5xl">
+      <div class="text-center mb-12">
+        <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">Three steps</p>
+        <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1A1A1A] mb-4" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          Two minutes in. Actionable report out.
+        </h2>
+        <p class="font-dm-sans text-base md:text-xl text-gray-600 max-w-2xl mx-auto" style="letter-spacing:-0.05em;">
+          No login. No account. No waiting room.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-14 h-14 rounded-full border-2 border-[#4148FF] font-jetbrains font-bold text-xl text-[#4148FF] flex items-center justify-center mx-auto mb-5" style="letter-spacing:-0.05em;">01</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">Submit your URL</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">Fill in a short form with your website URL and a few details about your business. Takes under 2 minutes.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-14 h-14 rounded-full border-2 border-[#4148FF] font-jetbrains font-bold text-xl text-[#4148FF] flex items-center justify-center mx-auto mb-5" style="letter-spacing:-0.05em;">02</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">We analyze</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">Our engine evaluates your site across 25+ AI readiness criteria — the same signals that influence what ChatGPT, Perplexity, and Google AI cite.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-14 h-14 rounded-full border-2 border-[#4148FF] font-jetbrains font-bold text-xl text-[#4148FF] flex items-center justify-center mx-auto mb-5" style="letter-spacing:-0.05em;">03</div>
+          <h3 class="font-dm-serif font-bold text-lg md:text-xl text-[#1A1A1A] mb-3">Get your score</h3>
+          <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed" style="letter-spacing:-0.05em;">Your personalized report lands in your inbox with a score, specific recommendations, and a roadmap you can hand directly to your team or developer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FORM ===================== -->
+  <section id="assessment-form" class="py-16 md:py-24 px-4 bg-gray-50 border-t border-gray-200">
+    <div class="container mx-auto max-w-2xl">
+      <div class="text-center mb-10">
+        <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">Free assessment</p>
+        <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl text-[#1A1A1A] mb-3" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          Get your AI Readiness score
+        </h2>
+        <p class="font-dm-sans text-base md:text-lg text-gray-600" style="letter-spacing:-0.05em;">
+          Fill in the form below. Your personalized report will be in your inbox within minutes.
+        </p>
+      </div>
+
+      <!-- Form card -->
+      <div id="form-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-10">
+        <form id="assessment-form-el" class="space-y-6" novalidate>
+
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block font-dm-sans font-semibold text-sm text-[#1A1A1A] mb-2" style="letter-spacing:-0.05em;">
+                Your name <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text" name="name" required
+                placeholder="Jane Smith"
+                class="w-full border border-gray-200 rounded-[14px] px-4 py-3 font-dm-sans text-sm md:text-base text-[#1A1A1A] placeholder-gray-400 focus:border-[#4148FF] focus:ring-1 focus:ring-[#4148FF] transition-colors"
+                style="letter-spacing:-0.05em;"
+              />
+            </div>
+            <div>
+              <label class="block font-dm-sans font-semibold text-sm text-[#1A1A1A] mb-2" style="letter-spacing:-0.05em;">
+                Business email <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="email" name="email" required
+                placeholder="jane@yourcompany.com"
+                class="w-full border border-gray-200 rounded-[14px] px-4 py-3 font-dm-sans text-sm md:text-base text-[#1A1A1A] placeholder-gray-400 focus:border-[#4148FF] focus:ring-1 focus:ring-[#4148FF] transition-colors"
+                style="letter-spacing:-0.05em;"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-dm-sans font-semibold text-sm text-[#1A1A1A] mb-2" style="letter-spacing:-0.05em;">
+              Website URL <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text" name="url" required
+              placeholder="https://yourwebsite.com"
+              class="w-full border border-gray-200 rounded-[14px] px-4 py-3 font-dm-sans text-sm md:text-base text-[#1A1A1A] placeholder-gray-400 focus:border-[#4148FF] focus:ring-1 focus:ring-[#4148FF] transition-colors"
+              style="letter-spacing:-0.05em;"
+            />
+          </div>
+
+          <div>
+            <label class="block font-dm-sans font-semibold text-sm text-[#1A1A1A] mb-2" style="letter-spacing:-0.05em;">
+              What's your main concern? <span class="text-red-500">*</span>
+            </label>
+            <select
+              name="concern" required
+              class="w-full border border-gray-200 rounded-[14px] px-4 py-3 font-dm-sans text-sm md:text-base text-[#1A1A1A] focus:border-[#4148FF] focus:ring-1 focus:ring-[#4148FF] transition-colors bg-white appearance-none"
+              style="letter-spacing:-0.05em;"
+            >
+              <option value="" disabled selected>Select your main concern</option>
+              <option value="organic-traffic">Organic traffic is declining</option>
+              <option value="ai-visibility">Not appearing in AI-generated answers</option>
+              <option value="competitors">Competitors are being recommended instead</option>
+              <option value="all">All of the above</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-dm-sans font-semibold text-sm text-[#1A1A1A] mb-2" style="letter-spacing:-0.05em;">
+              Additional context <span class="font-normal text-gray-400">(optional)</span>
+            </label>
+            <textarea
+              name="context" rows="3"
+              placeholder="Anything that helps us tailor your report — industry, top pages, current SEO setup..."
+              class="w-full border border-gray-200 rounded-[14px] px-4 py-3 font-dm-sans text-sm md:text-base text-[#1A1A1A] placeholder-gray-400 focus:border-[#4148FF] focus:ring-1 focus:ring-[#4148FF] transition-colors resize-none"
+              style="letter-spacing:-0.05em;"
+            ></textarea>
+          </div>
+
+          <div id="form-error" class="hidden bg-red-50 border border-red-200 rounded-[14px] px-4 py-3 text-red-600 font-dm-sans text-sm" style="letter-spacing:-0.05em;">
+            Please fill in all required fields before submitting.
+          </div>
+
+          <button
+            type="submit" id="submit-btn"
+            class="w-full bg-[#4148FF] hover:bg-[#3B40E6] text-white py-4 md:py-5 rounded-[14px] font-dm-sans text-base md:text-xl font-semibold transition-all duration-200 hover:translate-y-[1px]"
+            style="letter-spacing:-0.05em;"
+          >
+            Run My Free Assessment
+          </button>
+
+          <p class="text-center font-dm-sans text-xs text-gray-400" style="letter-spacing:-0.05em;">
+            No account. No credit card. We don't share your data.
+          </p>
+        </form>
+      </div>
+
+      <!-- Success state -->
+      <div id="success-container" class="hidden bg-white border border-gray-200 rounded-2xl p-8 md:p-12 text-center">
+        <div class="w-16 h-16 rounded-full bg-[#4148FF] text-white flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+        </div>
+        <h3 class="font-jetbrains font-bold text-2xl md:text-3xl text-[#1A1A1A] mb-3" style="letter-spacing:-0.05em;word-spacing:-0.2em;">You're in the queue.</h3>
+        <p class="font-dm-sans text-base md:text-lg text-gray-600 mb-4 max-w-sm mx-auto" style="letter-spacing:-0.05em;">Your AI Readiness report is being generated. Check your inbox — it'll be there within minutes.</p>
+        <p class="font-garamond italic text-base text-gray-400">While you wait, identify the pages that drive the most revenue. Those are the ones that need attention first.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq" class="py-16 md:py-24 px-4">
+    <div class="container mx-auto max-w-3xl">
+      <div class="text-center mb-12">
+        <p class="font-dm-sans text-sm text-[#4148FF] uppercase tracking-widest mb-4">Common questions</p>
+        <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl text-[#1A1A1A]" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          What you probably want to know
+        </h2>
+      </div>
+
+      <div class="border-t border-gray-200">
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">What exactly does the assessment analyze?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">We evaluate your website across four dimensions: Answer-Shaped Content (how AI-extractable your content is), Technical AI Foundation (Schema markup and entity clarity), Authority & Trust Signals (E-E-A-T evidence), and Crawlability & Access (technical barriers to AI indexing). Each dimension is scored and broken down into specific, actionable findings.</p>
+          </div>
+        </div>
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">How long does it take to get my report?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">Most reports are delivered within minutes of submission. For larger sites (1,000+ pages), it may take up to 30 minutes. You'll receive it directly to your inbox — no need to stay on the page.</p>
+          </div>
+        </div>
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">Is it actually free? What's the catch?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">Yes, it's free. No credit card, no account, no automatic trial. We run the assessment, deliver the report, and if you want help implementing the recommendations, that's a conversation we're happy to have — but there's no pressure and no hidden step.</p>
+          </div>
+        </div>
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">Do I need technical knowledge to act on the recommendations?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">No. The report is designed to be shareable with your developer or content team. Each recommendation includes a plain-language explanation of what's needed and why. Quick wins are specifically flagged as actions a non-technical person can take immediately.</p>
+          </div>
+        </div>
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">My site is already well-optimized for SEO. Will this still be useful?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">Especially useful. Strong SEO and strong AI visibility share some overlap, but they diverge significantly in Schema implementation, content formatting, and authority signals. Most SEO-optimized sites score well on technical access but poorly on answer-shaped content and entity clarity — exactly the gaps that matter for AI citations.</p>
+          </div>
+        </div>
+
+        <div class="faq-item border-b border-gray-200 py-5">
+          <button class="faq-trigger w-full flex items-start justify-between gap-4 text-left cursor-pointer bg-transparent border-none p-0">
+            <span class="font-dm-sans font-semibold text-base md:text-lg text-[#1A1A1A]" style="letter-spacing:-0.05em;">Which AI platforms does this cover?</span>
+            <span class="faq-icon text-[#4148FF] font-bold text-2xl mt-0.5 shrink-0">+</span>
+          </button>
+          <div class="faq-answer">
+            <p class="font-dm-sans text-sm md:text-base text-gray-600 leading-relaxed pt-3" style="letter-spacing:-0.05em;">The criteria we analyze are cross-platform — they improve your visibility across ChatGPT, Google AI Overviews, Perplexity, Claude, and other LLM-based search tools. While each platform has nuances, the core signals (content structure, Schema markup, authority) are consistent across all of them.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FINAL CTA ===================== -->
+  <section class="py-16 md:py-24 px-4 bg-[#1A1A1A]">
+    <div class="container mx-auto max-w-3xl text-center">
+      <h2 class="font-jetbrains font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-6" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+        Being cited by AI is<br/>the new Position Zero.
+      </h2>
+      <p class="font-dm-sans text-base md:text-xl text-gray-400 max-w-2xl mx-auto mb-4 leading-relaxed" style="letter-spacing:-0.05em;">
+        In traditional SEO, you competed to appear among ten blue links. In the AI era, there's one answer — and one source. The businesses that get there first will own their category for the next decade.
+      </p>
+      <p class="font-dm-sans text-base md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed" style="letter-spacing:-0.05em;">
+        Your assessment is free. Your score takes minutes. Your roadmap is ready.
+      </p>
+      <a href="#assessment-form" class="inline-block bg-[#4148FF] hover:bg-[#3B40E6] text-white px-8 md:px-16 py-4 md:py-6 rounded-[14px] font-dm-sans text-base md:text-xl font-semibold transition-all duration-200 hover:translate-y-[1px] mb-5" style="letter-spacing:-0.05em;">
+        Get My Free AI Readiness Assessment
+      </a>
+      <p class="font-dm-sans text-sm text-gray-600" style="letter-spacing:-0.05em;">Delivered to your inbox. No credit card. Takes 2 minutes.</p>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="py-10 px-4 border-t border-gray-200">
+    <div class="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="text-center md:text-left">
+        <a href="#" class="font-jetbrains font-bold text-xl" style="letter-spacing:-0.05em;word-spacing:-0.2em;">
+          <span class="text-[#4148FF]">Prompt</span><span class="text-[#1A1A1A]">Ready</span>
+        </a>
+        <p class="font-garamond italic text-sm text-gray-400 mt-1">AI visibility starts with knowing where you stand.</p>
+      </div>
+      <div class="flex gap-6 font-dm-sans text-sm text-gray-500" style="letter-spacing:-0.05em;">
+        <a href="#faq" class="hover:text-[#4148FF] transition-colors">FAQ</a>
+        <a href="#" class="hover:text-[#4148FF] transition-colors">Privacy Policy</a>
+        <a href="mailto:hello@promptready.com" class="hover:text-[#4148FF] transition-colors">hello@promptready.com</a>
+      </div>
+      <p class="font-dm-sans text-xs text-gray-400" style="letter-spacing:-0.05em;">© 2026 PromptReady. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== JS ===================== -->
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-trigger').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var item = btn.closest('.faq-item');
+        var answer = item.querySelector('.faq-answer');
+        var icon = item.querySelector('.faq-icon');
+        var isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(function(el) {
+          el.classList.remove('open');
+          el.querySelector('.faq-answer').classList.remove('open');
+          el.querySelector('.faq-icon').classList.remove('open');
+        });
+
+        // Open clicked if was closed
+        if (!isOpen) {
+          item.classList.add('open');
+          answer.classList.add('open');
+          icon.classList.add('open');
+        }
+      });
+    });
+
+    // Form submission
+    document.getElementById('assessment-form-el').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var name    = this.querySelector('[name="name"]').value.trim();
+      var email   = this.querySelector('[name="email"]').value.trim();
+      var url     = this.querySelector('[name="url"]').value.trim();
+      var concern = this.querySelector('[name="concern"]').value;
+      var errorEl = document.getElementById('form-error');
+
+      if (!name || !email || !url || !concern) {
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      errorEl.classList.add('hidden');
+
+      var btn = document.getElementById('submit-btn');
+      btn.textContent = 'Submitting…';
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      // TODO: replace the setTimeout below with a fetch() to your form endpoint
+      // e.g. fetch('https://formspree.io/f/YOUR_ID', { method: 'POST', body: new FormData(this) })
+      setTimeout(function() {
+        document.getElementById('form-container').classList.add('hidden');
+        document.getElementById('success-container').classList.remove('hidden');
+        document.getElementById('success-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 1200);
+    });
+  </script>
+
+</body>
+</html>
