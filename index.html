@@ -577,13 +577,31 @@
       btn.disabled = true;
       btn.classList.add('opacity-70', 'cursor-not-allowed');
 
-      // TODO: replace the setTimeout below with a fetch() to your form endpoint
-      // e.g. fetch('https://formspree.io/f/YOUR_ID', { method: 'POST', body: new FormData(this) })
-      setTimeout(function() {
+      fetch('https://mindalizerai.app.n8n.cloud/webhook/llm-readiness-promptready', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          url: url,
+          concern: concern,
+          context: (document.querySelector('[name="context"]') || {}).value || ''
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
         document.getElementById('form-container').classList.add('hidden');
         document.getElementById('success-container').classList.remove('hidden');
         document.getElementById('success-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 1200);
+      })
+      .catch(function() {
+        btn.textContent = 'Get My Free Assessment';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        var errorEl = document.getElementById('form-error');
+        errorEl.textContent = 'Something went wrong. Please try again.';
+        errorEl.classList.remove('hidden');
+      });
     });
   </script>
 
