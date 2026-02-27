@@ -30,6 +30,16 @@
       cards[prInsightIndex].classList.add('active');
     }
 
+    function prShowSuccess() {
+      clearInterval(prInsightInterval);
+      prStepTimers.forEach(function(t) { clearTimeout(t); });
+      prStepTimers = [];
+      var panel = document.getElementById('analysis-container');
+      if (panel) { panel.classList.remove('active'); panel.style.display = 'none'; }
+      var success = document.getElementById('success-container');
+      if (success) { success.classList.remove('hidden'); success.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }
+
     function prStartAnalysis(url) {
       var domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
       document.getElementById('pr-domain-text').textContent = domain;
@@ -722,7 +732,7 @@
         body: JSON.stringify({ name: name, email: email, url: url, concern: concern, context: 'Submitted via PromptReady LP (SEO Angle)' })
       })
       .then(function(res) { return res.json(); })
-      .then(function() { /* analysis running in background — email will arrive */ })
+      .then(function() { prShowSuccess(); })
       .catch(function() {
         document.getElementById('form-container').classList.remove('hidden');
         document.getElementById('analysis-container').classList.remove('active');
