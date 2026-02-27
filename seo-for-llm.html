@@ -9,6 +9,60 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    var PR_STEPS = [
+      'Scanning your domain…',
+      'Checking AI citation signals…',
+      'Analysing content structure…',
+      'Evaluating schema markup…',
+      'Measuring LLM visibility…',
+      'Compiling your report…'
+    ];
+    var PR_STEP_DELAYS = [0, 3000, 8000, 15000, 22000, 38000];
+    var PR_DONE_DELAY = 43000;
+    var prInsightIndex = 0;
+    var prInsightInterval = null;
+    var prStepTimers = [];
+
+    function prShowInsightCard(idx) {
+      var cards = document.querySelectorAll('.pr-insight-card');
+      cards.forEach(function(c) { c.classList.remove('active'); });
+      prInsightIndex = idx % cards.length;
+      cards[prInsightIndex].classList.add('active');
+    }
+
+    function prStartAnalysis(url) {
+      var domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      document.getElementById('pr-domain-text').textContent = domain;
+      var panel = document.getElementById('analysis-container');
+      panel.classList.add('active');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      prShowInsightCard(0);
+      prInsightInterval = setInterval(function() { prShowInsightCard(prInsightIndex + 1); }, 7000);
+
+      // Rotate through steps
+      PR_STEPS.forEach(function(label, i) {
+        var t = setTimeout(function() {
+          document.getElementById('pr-step-text').textContent = label;
+        }, PR_STEP_DELAYS[i]);
+        prStepTimers.push(t);
+      });
+
+      // Show success screen when done
+      var doneTimer = setTimeout(function() {
+        clearInterval(prInsightInterval);
+        prStepTimers.forEach(function(t) { clearTimeout(t); });
+        panel.classList.remove('active');
+        panel.style.display = 'none';
+        var success = document.getElementById('success-container');
+        success.classList.remove('hidden');
+        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, PR_DONE_DELAY);
+      prStepTimers.push(doneTimer);
+    }
+
+  </script>
+  <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -37,6 +91,58 @@
     .faq-item.open .faq-icon { transform: rotate(45deg); }
     html { scroll-behavior: smooth; }
     input:focus, select:focus, textarea:focus { outline: none; }
+
+    /* ── PromptReady Analysis Panel ── */
+    #analysis-container { display: none; }
+    #analysis-container.active { display: block; animation: prFadeIn 0.4s ease-out; }
+    @keyframes prFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    .pr-domain-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 500; color: #555;
+      background: #f4f4f5; border-radius: 999px; padding: 4px 12px;
+      margin-bottom: 18px; font-family: 'JetBrains Mono', monospace;
+    }
+    .pr-domain-badge svg { width:12px; height:12px; color:#4148FF; flex-shrink:0; }
+
+    .pr-radar-wrap { position:relative; width:128px; height:128px; margin:0 0 16px 0; }
+    .pr-radar-ring { position:absolute; border-radius:50%; border:1.5px solid rgba(65,72,255,0.1); top:50%; left:50%; transform:translate(-50%,-50%); }
+    .pr-radar-ring.r1 { width:40px; height:40px; }
+    .pr-radar-ring.r2 { width:76px; height:76px; }
+    .pr-radar-ring.r3 { width:112px; height:112px; }
+    .pr-radar-pulse { position:absolute; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(65,72,255,0.4); animation:prRadarExpand 2.4s ease-out infinite; }
+    .pr-radar-pulse.p1 { animation-delay:0s; }
+    .pr-radar-pulse.p2 { animation-delay:0.8s; }
+    .pr-radar-pulse.p3 { animation-delay:1.6s; }
+    @keyframes prRadarExpand {
+      0%   { width:20px; height:20px; opacity:1; }
+      100% { width:128px; height:128px; opacity:0; }
+    }
+    .pr-radar-center {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:30px; height:30px; border-radius:50%; background:#4148FF;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .pr-radar-center svg { width:17px; height:17px; color:#fff; }
+
+    .pr-step-label {
+      font-size:13px; font-weight:500; color:#4148FF;
+      font-family:'JetBrains Mono', monospace; letter-spacing:-0.03em;
+      min-height:18px; text-align:center; margin-bottom:20px;
+      animation: prStepFade 0.5s ease-out;
+    }
+    @keyframes prStepFade { from { opacity:0; } to { opacity:1; } }
+
+    .pr-insight-cards { position:relative; height:80px; overflow:hidden; margin-top:8px; }
+    .pr-insight-card {
+      position:absolute; width:100%;
+      background:#f8f8ff; border:1px solid rgba(65,72,255,0.12); border-radius:10px;
+      padding:10px 14px; font-size:11.5px; color:#444; line-height:1.4;
+      opacity:0; transform:translateY(12px); transition:opacity 0.5s ease, transform 0.5s ease;
+      pointer-events:none;
+    }
+    .pr-insight-card.active { opacity:1; transform:translateY(0); }
+    .pr-insight-card strong { color:#4148FF; font-weight:600; }
   </style>
 </head>
 <body class="bg-white text-[#1A1A1A] font-dm-sans" style="letter-spacing:-0.05em;">
@@ -404,6 +510,35 @@
         </form>
       </div>
 
+      <!-- Analysis animation state -->
+      <div id="analysis-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-10">
+        <div class="flex flex-col items-center text-center">
+          <div class="pr-domain-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <span id="pr-domain-text">example.com</span>
+          </div>
+          <div class="pr-radar-wrap">
+            <div class="pr-radar-ring r1"></div>
+            <div class="pr-radar-ring r2"></div>
+            <div class="pr-radar-ring r3"></div>
+            <div class="pr-radar-pulse p1"></div>
+            <div class="pr-radar-pulse p2"></div>
+            <div class="pr-radar-pulse p3"></div>
+            <div class="pr-radar-center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+          </div>
+          <p id="pr-step-text" class="pr-step-label">Scanning your domain…</p>
+          <p class="font-dm-sans text-sm text-gray-500 mb-4 max-w-xs" style="letter-spacing:-0.03em;">Running your AI Readiness Assessment — we'll email you the full report.</p>
+          <div class="pr-insight-cards w-full max-w-sm">
+            <div class="pr-insight-card" id="pr-card-0"><strong>90%</strong> of AI-generated answers cite fewer than 5 sources — is your site one of them?</div>
+            <div class="pr-insight-card" id="pr-card-1"><strong>46%</strong> of B2B buyers now use AI tools before reaching out to a vendor.</div>
+            <div class="pr-insight-card" id="pr-card-2">Sites with clear <strong>structured data</strong> are 3× more likely to be cited by LLMs.</div>
+            <div class="pr-insight-card" id="pr-card-3">ChatGPT and Perplexity now answer <strong>1 billion+ queries/day</strong> — SEO alone isn't enough.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Success state -->
       <div id="success-container" class="hidden bg-white border border-gray-200 rounded-2xl p-8 md:p-12 text-center">
         <div class="w-16 h-16 rounded-full bg-[#4148FF] text-white flex items-center justify-center mx-auto mb-6">
@@ -577,24 +712,20 @@
       btn.disabled = true;
       btn.classList.add('opacity-70', 'cursor-not-allowed');
 
+      var urlVal = url;
+      document.getElementById('form-container').classList.add('hidden');
+      prStartAnalysis(urlVal);
+
       fetch('https://mindalizerai.app.n8n.cloud/webhook/llm-readiness-promptready', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          url: url,
-          concern: concern,
-          context: (document.querySelector('[name="context"]') || {}).value || ''
-        })
+        body: JSON.stringify({ name: name, email: email, url: url, concern: concern, context: 'Submitted via PromptReady LP (SEO Angle)' })
       })
       .then(function(res) { return res.json(); })
-      .then(function() {
-        document.getElementById('form-container').classList.add('hidden');
-        document.getElementById('success-container').classList.remove('hidden');
-        document.getElementById('success-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      })
+      .then(function() { /* analysis running in background — email will arrive */ })
       .catch(function() {
+        document.getElementById('form-container').classList.remove('hidden');
+        document.getElementById('analysis-container').classList.remove('active');
         btn.textContent = 'Get My Free Assessment';
         btn.disabled = false;
         btn.classList.remove('opacity-70', 'cursor-not-allowed');
