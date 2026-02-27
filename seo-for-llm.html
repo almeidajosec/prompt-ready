@@ -106,54 +106,25 @@
     #analysis-container { display: none; }
     #analysis-container.active { display: block; animation: prFadeIn 0.4s ease-out; }
     @keyframes prFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-    .pr-domain-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      font-size: 12px; font-weight: 500; color: #555;
-      background: #f4f4f5; border-radius: 999px; padding: 4px 12px;
-      margin-bottom: 18px; font-family: 'JetBrains Mono', monospace;
-    }
-    .pr-domain-badge svg { width:12px; height:12px; color:#4148FF; flex-shrink:0; }
-
-    .pr-radar-wrap { position:relative; width:128px; height:128px; margin:0 0 16px 0; }
-    .pr-radar-ring { position:absolute; border-radius:50%; border:1.5px solid rgba(65,72,255,0.1); top:50%; left:50%; transform:translate(-50%,-50%); }
-    .pr-radar-ring.r1 { width:40px; height:40px; }
-    .pr-radar-ring.r2 { width:76px; height:76px; }
-    .pr-radar-ring.r3 { width:112px; height:112px; }
-    .pr-radar-pulse { position:absolute; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(65,72,255,0.4); animation:prRadarExpand 2.4s ease-out infinite; }
-    .pr-radar-pulse.p1 { animation-delay:0s; }
-    .pr-radar-pulse.p2 { animation-delay:0.8s; }
-    .pr-radar-pulse.p3 { animation-delay:1.6s; }
-    @keyframes prRadarExpand {
-      0%   { width:20px; height:20px; opacity:1; }
-      100% { width:128px; height:128px; opacity:0; }
-    }
-    .pr-radar-center {
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      width:30px; height:30px; border-radius:50%; background:#4148FF;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .pr-radar-center svg { width:17px; height:17px; color:#fff; }
-
-    .pr-step-label {
-      font-size:13px; font-weight:500; color:#4148FF;
-      font-family:'JetBrains Mono', monospace; letter-spacing:-0.03em;
-      min-height:18px; text-align:center; margin-bottom:20px;
-      animation: prStepFade 0.5s ease-out;
-    }
-    @keyframes prStepFade { from { opacity:0; } to { opacity:1; } }
-
-    .pr-insight-cards { position:relative; height:80px; overflow:hidden; margin-top:8px; }
-    .pr-insight-card {
-      position:absolute; width:100%;
-      background:#f8f8ff; border:1px solid rgba(65,72,255,0.12); border-radius:10px;
-      padding:10px 14px; font-size:11.5px; color:#444; line-height:1.4;
-      opacity:0; transform:translateY(12px); transition:opacity 0.5s ease, transform 0.5s ease;
-      pointer-events:none;
-    }
-    .pr-insight-card.active { opacity:1; transform:translateY(0); }
-    .pr-insight-card strong { color:#4148FF; font-weight:600; }
-  </style>
+    .pr-analysis-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .pr-chat-spinner { width:20px; height:20px; border-radius:50%; border:2px solid rgba(65,72,255,0.15); border-top-color:#4148FF; animation:prSpin 0.9s linear infinite; flex-shrink:0; }
+    @keyframes prSpin { to { transform:rotate(360deg); } }
+    .pr-progress-bar-container { width:100%; height:4px; background:#E5E7EB; border-radius:4px; margin-bottom:24px; overflow:hidden; }
+    .pr-progress-bar { height:100%; width:0%; background:linear-gradient(90deg,#4148FF,#3B40E6); border-radius:4px; transition:width 0.6s ease-out; }
+    .pr-progress-steps { list-style:none; margin:0; padding:0; }
+    .pr-progress-step { display:flex; align-items:center; gap:12px; padding:10px 0; font-size:14px; color:#999; transition:color 0.3s,opacity 0.3s; opacity:0.45; font-family:'DM Sans',sans-serif; letter-spacing:-0.02em; }
+    .pr-progress-step.active { color:#1A1A1A; opacity:1; font-weight:500; }
+    .pr-progress-step.done { color:#666; opacity:0.7; }
+    .pr-step-indicator { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F8F9FF; border:1.5px solid #E5E7EB; transition:all 0.3s; }
+    .pr-progress-step.active .pr-step-indicator { border-color:#4148FF; background:rgba(65,72,255,0.06); }
+    .pr-progress-step.active .pr-step-indicator::after { content:''; width:6px; height:6px; background:#4148FF; border-radius:50%; animation:prPulse 1.2s ease-in-out infinite; }
+    @keyframes prPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
+    .pr-progress-step.done .pr-step-indicator { border-color:#4148FF; background:rgba(65,72,255,0.08); }
+    .pr-progress-step.done .pr-step-indicator::after { content:''; display:none; }
+    .pr-step-indicator svg { display:none; width:14px; height:14px; color:#4148FF; }
+    .pr-progress-step.done .pr-step-indicator svg { display:block; }
+    .pr-step-elapsed { margin-left:auto; font-size:12px; color:#999; font-weight:400; font-variant-numeric:tabular-nums; }
+    </style>
 </head>
 <body class="bg-white text-[#1A1A1A] font-dm-sans" style="letter-spacing:-0.05em;">
 
