@@ -10,43 +10,56 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     // ── PromptReady Analysis Animation ──
-    var PR_STEPS = [
-      'Connecting to analysis engine...',
-      'Scraping website content...',
-      'Extracting links & site structure...',
-      'Mapping all site pages...',
-      'Running AI-powered analysis...',
-      'Generating report & sending email...'
-    ];
     var PR_STEP_DELAYS = [0, 3000, 8000, 15000, 22000, 38000];
-    var PR_DONE_DELAY = 43000;
+    var prState = { currentStep:-1, startTime:null, stepTimers:[], elapsedInterval:null };
 
-    var prInsightIndex = 0;
-    var prInsightInterval = null;
-    var prStepTimers = [];
-
-    function prShowInsightCard(idx) {
-      var cards = document.querySelectorAll('.pr-insight-card');
-      var dots = document.querySelectorAll('.pr-insight-dot');
-      prInsightIndex = ((idx % 4) + 4) % 4;
-      cards.forEach(function(c) { c.classList.remove('active'); });
-      dots.forEach(function(d) { d.classList.remove('active'); });
-      cards[prInsightIndex].classList.add('active');
-      dots[prInsightIndex].classList.add('active');
+    function prActivateStep(index) {
+      var steps = document.querySelectorAll('.pr-progress-step');
+      var progressBar = document.getElementById('prProgressBar');
+      var chatStatus = document.getElementById('prChatStatus');
+      for (var i = 0; i < index; i++) {
+        steps[i].classList.remove('active');
+        steps[i].classList.add('done');
+      }
+      if (index < steps.length) {
+        steps[index].classList.add('active');
+        steps[index].classList.remove('done');
+        var nodes = steps[index].childNodes;
+        var stepText = '';
+        for (var n = 0; n < nodes.length; n++) {
+          if (nodes[n].nodeType === 3) { stepText = nodes[n].textContent.trim(); if (stepText) break; }
+        }
+        if (chatStatus && stepText) chatStatus.textContent = stepText + '...';
+      }
+      var pct = Math.min(((index + 0.5) / steps.length) * 100, 100);
+      if (progressBar) progressBar.style.width = pct + '%';
+      prState.currentStep = index;
     }
 
-    document.querySelectorAll('.pr-insight-dot').forEach(function(dot) {
-      dot.addEventListener('click', function() {
-        clearInterval(prInsightInterval);
-        prShowInsightCard(parseInt(dot.getAttribute('data-dot')));
-        prInsightInterval = setInterval(function() { prShowInsightCard(prInsightIndex + 1); }, 7000);
-      });
-    });
+    function prStartElapsedTimer() {
+      prState.startTime = Date.now();
+      prState.elapsedInterval = setInterval(function() {
+        var steps = document.querySelectorAll('.pr-progress-step');
+        var idx = prState.currentStep;
+        if (idx >= 0 && idx < steps.length) {
+          var elapsed = Math.floor((Date.now() - prState.startTime) / 1000);
+          var elSpan = steps[idx].querySelector('.pr-step-elapsed');
+          if (elSpan) elSpan.textContent = elapsed + 's';
+        }
+      }, 1000);
+    }
 
     function prShowSuccess() {
-      clearInterval(prInsightInterval);
-      prStepTimers.forEach(function(t) { clearTimeout(t); });
-      prStepTimers = [];
+      clearInterval(prState.elapsedInterval);
+      prState.stepTimers.forEach(function(t) { clearTimeout(t); });
+      prState.stepTimers = [];
+      var steps = document.querySelectorAll('.pr-progress-step');
+      var progressBar = document.getElementById('prProgressBar');
+      for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.remove('active');
+        steps[i].classList.add('done');
+      }
+      if (progressBar) progressBar.style.width = '100%';
       var panel = document.getElementById('analysis-container');
       if (panel) { panel.classList.remove('active'); panel.style.display = 'none'; }
       var success = document.getElementById('success-container');
@@ -54,37 +67,20 @@
     }
 
     function prStartAnalysis(url) {
-      var domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-      document.getElementById('pr-domain-text').textContent = domain;
       var panel = document.getElementById('analysis-container');
       panel.classList.add('active');
       panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      prShowInsightCard(0);
-      prInsightInterval = setInterval(function() { prShowInsightCard(prInsightIndex + 1); }, 7000);
-
-      // Rotate through steps
-      PR_STEPS.forEach(function(label, i) {
-        var t = setTimeout(function() {
-          document.getElementById('pr-step-text').textContent = label;
-        }, PR_STEP_DELAYS[i]);
-        prStepTimers.push(t);
+      prActivateStep(0);
+      prStartElapsedTimer();
+      PR_STEP_DELAYS.forEach(function(delay, i) {
+        if (i === 0) return;
+        var captured = i;
+        var t = setTimeout(function() { prActivateStep(captured); }, delay);
+        prState.stepTimers.push(t);
       });
-
-      // Show success screen when done
-      var doneTimer = setTimeout(function() {
-        clearInterval(prInsightInterval);
-        prStepTimers.forEach(function(t) { clearTimeout(t); });
-        panel.classList.remove('active');
-        panel.style.display = 'none';
-        var success = document.getElementById('success-container');
-        success.classList.remove('hidden');
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, PR_DONE_DELAY);
-      prStepTimers.push(doneTimer);
     }
 
-  </script>
+    </script>
   <script>
     tailwind.config = {
       theme: {
@@ -119,59 +115,25 @@
     #analysis-container { display: none; }
     #analysis-container.active { display: block; animation: prFadeIn 0.4s ease-out; }
     @keyframes prFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-    .pr-domain-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      font-size: 12px; font-weight: 500; color: #555;
-      background: rgba(65,72,255,0.06); border: 1px solid rgba(65,72,255,0.18);
-      border-radius: 20px; padding: 5px 14px; margin-bottom: 20px;
-    }
-    .pr-domain-badge svg { width:13px; height:13px; color:#4148FF; flex-shrink:0; }
-    .pr-domain-badge strong { color:#1A1A1A; font-weight:600; }
-
-    .pr-analysis-heading { font-size:clamp(20px,2.5vw,26px); font-weight:700; color:#1A1A1A; margin-bottom:8px; letter-spacing:-0.03em; }
-    .pr-analysis-sub { font-size:14px; color:#666; margin-bottom:28px; line-height:1.65; }
-
-    /* Radar */
-    .pr-radar-wrap { position:relative; width:128px; height:128px; margin:0 0 16px 0; }
-    .pr-radar-ring { position:absolute; border-radius:50%; border:1.5px solid rgba(65,72,255,0.1); top:50%; left:50%; transform:translate(-50%,-50%); }
-    .pr-radar-ring.r1 { width:40px; height:40px; }
-    .pr-radar-ring.r2 { width:76px; height:76px; }
-    .pr-radar-ring.r3 { width:112px; height:112px; }
-    .pr-radar-pulse { position:absolute; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(65,72,255,0.4); animation:prRadarExpand 2.4s ease-out infinite; }
-    .pr-radar-pulse.p1 { animation-delay:0s; }
-    .pr-radar-pulse.p2 { animation-delay:0.8s; }
-    .pr-radar-pulse.p3 { animation-delay:1.6s; }
-    @keyframes prRadarExpand {
-      0%   { width:14px; height:14px; opacity:1; border-color:rgba(65,72,255,0.5); }
-      100% { width:128px; height:128px; opacity:0; border-color:rgba(65,72,255,0); }
-    }
-    .pr-radar-center {
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      width:38px; height:38px; background:linear-gradient(135deg,#4148FF 0%,#3B40E6 100%);
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      box-shadow:0 0 20px rgba(65,72,255,0.3);
-    }
-    .pr-radar-center svg { width:17px; height:17px; color:#fff; }
-
-    /* Step label */
-    .pr-step-label { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; color:#4148FF; margin-bottom:24px; min-height:20px; font-family:'DM Sans',sans-serif; }
-    .pr-step-dot { width:7px; height:7px; border-radius:50%; background:#4148FF; flex-shrink:0; animation:prPulse 1.2s ease-in-out infinite; }
-    @keyframes prPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
-
-    /* Insight cards */
-    .pr-insight-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px; color:#999; margin-bottom:10px; }
-    .pr-insight-wrap { position:relative; min-height:120px; }
-    .pr-insight-card { display:none; padding:20px 22px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; border-left:4px solid #4148FF; }
-    .pr-insight-card.active { display:block; animation:prFadeIn 0.4s ease-out; }
-    .pr-insight-stat { font-size:34px; font-weight:700; color:#4148FF; font-family:'JetBrains Mono','Courier New',monospace; margin-bottom:6px; }
-    .pr-insight-text { font-size:13px; color:#333; line-height:1.65; margin-bottom:6px; }
-    .pr-insight-source { font-size:11px; color:#999; }
-    .pr-insight-dots { display:flex; gap:6px; margin-top:12px; }
-    .pr-insight-dot { width:6px; height:6px; border-radius:50%; background:#e5e7eb; cursor:pointer; transition:background 0.2s; }
-    .pr-insight-dot.active { background:#4148FF; }
-
-  </style>
+    .pr-analysis-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .pr-chat-spinner { width:20px; height:20px; border-radius:50%; border:2px solid rgba(65,72,255,0.15); border-top-color:#4148FF; animation:prSpin 0.9s linear infinite; flex-shrink:0; }
+    @keyframes prSpin { to { transform:rotate(360deg); } }
+    .pr-progress-bar-container { width:100%; height:4px; background:#E5E7EB; border-radius:4px; margin-bottom:24px; overflow:hidden; }
+    .pr-progress-bar { height:100%; width:0%; background:linear-gradient(90deg,#4148FF,#3B40E6); border-radius:4px; transition:width 0.6s ease-out; }
+    .pr-progress-steps { list-style:none; margin:0; padding:0; }
+    .pr-progress-step { display:flex; align-items:center; gap:12px; padding:10px 0; font-size:14px; color:#999; transition:color 0.3s,opacity 0.3s; opacity:0.45; font-family:'DM Sans',sans-serif; letter-spacing:-0.02em; }
+    .pr-progress-step.active { color:#1A1A1A; opacity:1; font-weight:500; }
+    .pr-progress-step.done { color:#666; opacity:0.7; }
+    .pr-step-indicator { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F8F9FF; border:1.5px solid #E5E7EB; transition:all 0.3s; }
+    .pr-progress-step.active .pr-step-indicator { border-color:#4148FF; background:rgba(65,72,255,0.06); }
+    .pr-progress-step.active .pr-step-indicator::after { content:''; width:6px; height:6px; background:#4148FF; border-radius:50%; animation:prPulse 1.2s ease-in-out infinite; }
+    @keyframes prPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
+    .pr-progress-step.done .pr-step-indicator { border-color:#4148FF; background:rgba(65,72,255,0.08); }
+    .pr-progress-step.done .pr-step-indicator::after { content:''; display:none; }
+    .pr-step-indicator svg { display:none; width:14px; height:14px; color:#4148FF; }
+    .pr-progress-step.done .pr-step-indicator svg { display:block; }
+    .pr-step-elapsed { margin-left:auto; font-size:12px; color:#999; font-weight:400; font-variant-numeric:tabular-nums; }
+    </style>
 </head>
 <body class="bg-white text-[#1A1A1A] font-dm-sans" style="letter-spacing:-0.05em;">
 
@@ -540,57 +502,44 @@
 
       
       <!-- Analysis Loading Panel -->
-      <div id="analysis-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-10">
-        <div class="pr-domain-badge">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Scanning: <strong id="pr-domain-text">yoursite.com</strong>
+      <div id="analysis-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
+        <div class="pr-analysis-header">
+          <div class="pr-chat-spinner"></div>
+          <span id="prChatStatus" class="font-dm-sans font-semibold text-[#1A1A1A]" style="letter-spacing:-0.03em;">Analyzing your website...</span>
         </div>
-        <h3 class="pr-analysis-heading">Analyzing your website</h3>
-        <p class="pr-analysis-sub">Our AI is examining your site right now. Here's what we're learning while you wait.</p>
-        <div class="pr-radar-wrap">
-          <div class="pr-radar-ring r1"></div>
-          <div class="pr-radar-ring r2"></div>
-          <div class="pr-radar-ring r3"></div>
-          <div class="pr-radar-pulse p1"></div>
-          <div class="pr-radar-pulse p2"></div>
-          <div class="pr-radar-pulse p3"></div>
-          <div class="pr-radar-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg>
-          </div>
-        </div>
-        <div class="pr-step-label">
-          <span class="pr-step-dot"></span>
-          <span id="pr-step-text">Initializing...</span>
-        </div>
-        <div class="pr-insight-label">While you wait — AI search in numbers</div>
-        <div class="pr-insight-wrap" id="pr-insight-wrap">
-          <div class="pr-insight-card active" data-card="0">
-            <div class="pr-insight-stat">6/10</div>
-            <div class="pr-insight-text">Google searches now show an AI-generated answer — cutting click-through rates by up to 50%.</div>
-            <div class="pr-insight-source">SparkToro / Rand Fishkin, 2024</div>
-          </div>
-          <div class="pr-insight-card" data-card="1">
-            <div class="pr-insight-stat">2–7</div>
-            <div class="pr-insight-text">domains are cited in a typical AI response, vs. 10 blue links in traditional search. Getting cited is a zero-sum game.</div>
-            <div class="pr-insight-source">Search Engine Journal, 2025</div>
-          </div>
-          <div class="pr-insight-card" data-card="2">
-            <div class="pr-insight-stat">3×</div>
-            <div class="pr-insight-text">higher conversion rate for visitors who arrive via an AI citation — they come with more context and higher intent.</div>
-            <div class="pr-insight-source">Gartner Digital Commerce, 2025</div>
-          </div>
-          <div class="pr-insight-card" data-card="3">
-            <div class="pr-insight-stat">−25%</div>
-            <div class="pr-insight-text">expected drop in traditional organic search traffic by 2026 as users shift to AI tools for research and discovery.</div>
-            <div class="pr-insight-source">Gartner, 2024</div>
-          </div>
-        </div>
-        <div class="pr-insight-dots" id="pr-insight-dots">
-          <div class="pr-insight-dot active" data-dot="0"></div>
-          <div class="pr-insight-dot" data-dot="1"></div>
-          <div class="pr-insight-dot" data-dot="2"></div>
-          <div class="pr-insight-dot" data-dot="3"></div>
-        </div>
+        <div class="pr-progress-bar-container"><div class="pr-progress-bar" id="prProgressBar"></div></div>
+        <ul class="pr-progress-steps">
+      <li class="pr-progress-step" data-step="0">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Connecting to analysis engine
+        <span class="pr-step-elapsed"></span>
+      </li>
+      <li class="pr-progress-step" data-step="1">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Scraping website content
+        <span class="pr-step-elapsed"></span>
+      </li>
+      <li class="pr-progress-step" data-step="2">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Extracting links &amp; site structure
+        <span class="pr-step-elapsed"></span>
+      </li>
+      <li class="pr-progress-step" data-step="3">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Mapping all site pages
+        <span class="pr-step-elapsed"></span>
+      </li>
+      <li class="pr-progress-step" data-step="4">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Running AI-powered analysis
+        <span class="pr-step-elapsed"></span>
+      </li>
+      <li class="pr-progress-step" data-step="5">
+        <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+        Generating report &amp; sending email
+        <span class="pr-step-elapsed"></span>
+      </li>
+        </ul>
       </div>
 
       <!-- Success state -->
