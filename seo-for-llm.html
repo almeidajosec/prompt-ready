@@ -9,31 +9,57 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    var PR_STEPS = [
-      'Scanning your domain…',
-      'Checking AI citation signals…',
-      'Analysing content structure…',
-      'Evaluating schema markup…',
-      'Measuring LLM visibility…',
-      'Compiling your report…'
-    ];
+    // ── PromptReady Analysis Animation ──
     var PR_STEP_DELAYS = [0, 3000, 8000, 15000, 22000, 38000];
-    var PR_DONE_DELAY = 43000;
-    var prInsightIndex = 0;
-    var prInsightInterval = null;
-    var prStepTimers = [];
+    var prState = { currentStep:-1, startTime:null, stepTimers:[], elapsedInterval:null };
 
-    function prShowInsightCard(idx) {
-      var cards = document.querySelectorAll('.pr-insight-card');
-      cards.forEach(function(c) { c.classList.remove('active'); });
-      prInsightIndex = idx % cards.length;
-      cards[prInsightIndex].classList.add('active');
+    function prActivateStep(index) {
+      var steps = document.querySelectorAll('.pr-progress-step');
+      var progressBar = document.getElementById('prProgressBar');
+      var chatStatus = document.getElementById('prChatStatus');
+      for (var i = 0; i < index; i++) {
+        steps[i].classList.remove('active');
+        steps[i].classList.add('done');
+      }
+      if (index < steps.length) {
+        steps[index].classList.add('active');
+        steps[index].classList.remove('done');
+        var nodes = steps[index].childNodes;
+        var stepText = '';
+        for (var n = 0; n < nodes.length; n++) {
+          if (nodes[n].nodeType === 3) { stepText = nodes[n].textContent.trim(); if (stepText) break; }
+        }
+        if (chatStatus && stepText) chatStatus.textContent = stepText + '...';
+      }
+      var pct = Math.min(((index + 0.5) / steps.length) * 100, 100);
+      if (progressBar) progressBar.style.width = pct + '%';
+      prState.currentStep = index;
+    }
+
+    function prStartElapsedTimer() {
+      prState.startTime = Date.now();
+      prState.elapsedInterval = setInterval(function() {
+        var steps = document.querySelectorAll('.pr-progress-step');
+        var idx = prState.currentStep;
+        if (idx >= 0 && idx < steps.length) {
+          var elapsed = Math.floor((Date.now() - prState.startTime) / 1000);
+          var elSpan = steps[idx].querySelector('.pr-step-elapsed');
+          if (elSpan) elSpan.textContent = elapsed + 's';
+        }
+      }, 1000);
     }
 
     function prShowSuccess() {
-      clearInterval(prInsightInterval);
-      prStepTimers.forEach(function(t) { clearTimeout(t); });
-      prStepTimers = [];
+      clearInterval(prState.elapsedInterval);
+      prState.stepTimers.forEach(function(t) { clearTimeout(t); });
+      prState.stepTimers = [];
+      var steps = document.querySelectorAll('.pr-progress-step');
+      var progressBar = document.getElementById('prProgressBar');
+      for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.remove('active');
+        steps[i].classList.add('done');
+      }
+      if (progressBar) progressBar.style.width = '100%';
       var panel = document.getElementById('analysis-container');
       if (panel) { panel.classList.remove('active'); panel.style.display = 'none'; }
       var success = document.getElementById('success-container');
@@ -42,33 +68,21 @@
 
     function prStartAnalysis(url) {
       var domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-      document.getElementById('pr-domain-text').textContent = domain;
+      var urlEl = document.getElementById('prAnalysisUrl');
+      if (urlEl) urlEl.textContent = domain;
+      var successUrlEl = document.getElementById('prSuccessUrl');
+      if (successUrlEl) successUrlEl.textContent = domain;
       var panel = document.getElementById('analysis-container');
       panel.classList.add('active');
       panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      prShowInsightCard(0);
-      prInsightInterval = setInterval(function() { prShowInsightCard(prInsightIndex + 1); }, 7000);
-
-      // Rotate through steps
-      PR_STEPS.forEach(function(label, i) {
-        var t = setTimeout(function() {
-          document.getElementById('pr-step-text').textContent = label;
-        }, PR_STEP_DELAYS[i]);
-        prStepTimers.push(t);
+      prActivateStep(0);
+      prStartElapsedTimer();
+      PR_STEP_DELAYS.forEach(function(delay, i) {
+        if (i === 0) return;
+        var captured = i;
+        var t = setTimeout(function() { prActivateStep(captured); }, delay);
+        prState.stepTimers.push(t);
       });
-
-      // Show success screen when done
-      var doneTimer = setTimeout(function() {
-        clearInterval(prInsightInterval);
-        prStepTimers.forEach(function(t) { clearTimeout(t); });
-        panel.classList.remove('active');
-        panel.style.display = 'none';
-        var success = document.getElementById('success-container');
-        success.classList.remove('hidden');
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, PR_DONE_DELAY);
-      prStepTimers.push(doneTimer);
     }
 
   </script>
@@ -124,6 +138,7 @@
     .pr-step-indicator svg { display:none; width:14px; height:14px; color:#4148FF; }
     .pr-progress-step.done .pr-step-indicator svg { display:block; }
     .pr-step-elapsed { margin-left:auto; font-size:12px; color:#999; font-weight:400; font-variant-numeric:tabular-nums; }
+    .pr-analysis-url { font-size:12px; color:#4148FF; font-family:'JetBrains Mono',monospace; letter-spacing:-0.02em; margin:-4px 0 14px 32px; opacity:0.8; }
     </style>
 </head>
 <body class="bg-white text-[#1A1A1A] font-dm-sans" style="letter-spacing:-0.05em;">
@@ -491,33 +506,46 @@
         </form>
       </div>
 
-      <!-- Analysis animation state -->
-      <div id="analysis-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-10">
-        <div class="flex flex-col items-center text-center">
-          <div class="pr-domain-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <span id="pr-domain-text">example.com</span>
-          </div>
-          <div class="pr-radar-wrap">
-            <div class="pr-radar-ring r1"></div>
-            <div class="pr-radar-ring r2"></div>
-            <div class="pr-radar-ring r3"></div>
-            <div class="pr-radar-pulse p1"></div>
-            <div class="pr-radar-pulse p2"></div>
-            <div class="pr-radar-pulse p3"></div>
-            <div class="pr-radar-center">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
-            </div>
-          </div>
-          <p id="pr-step-text" class="pr-step-label">Scanning your domain…</p>
-          <p class="font-dm-sans text-sm text-gray-500 mb-4 max-w-xs" style="letter-spacing:-0.03em;">Running your AI Readiness Assessment — we'll email you the full report.</p>
-          <div class="pr-insight-cards w-full max-w-sm">
-            <div class="pr-insight-card" id="pr-card-0"><strong>90%</strong> of AI-generated answers cite fewer than 5 sources — is your site one of them?</div>
-            <div class="pr-insight-card" id="pr-card-1"><strong>46%</strong> of B2B buyers now use AI tools before reaching out to a vendor.</div>
-            <div class="pr-insight-card" id="pr-card-2">Sites with clear <strong>structured data</strong> are 3× more likely to be cited by LLMs.</div>
-            <div class="pr-insight-card" id="pr-card-3">ChatGPT and Perplexity now answer <strong>1 billion+ queries/day</strong> — SEO alone isn't enough.</div>
-          </div>
+      <!-- Analysis Loading Panel -->
+      <div id="analysis-container" class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
+        <div class="pr-analysis-header">
+          <div class="pr-chat-spinner"></div>
+          <span id="prChatStatus" class="font-dm-sans font-semibold text-[#1A1A1A]" style="letter-spacing:-0.03em;">Analyzing your website...</span>
         </div>
+        <p id="prAnalysisUrl" class="pr-analysis-url"></p>
+        <div class="pr-progress-bar-container"><div class="pr-progress-bar" id="prProgressBar"></div></div>
+        <ul class="pr-progress-steps">
+          <li class="pr-progress-step" data-step="0">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Connecting to analysis engine
+            <span class="pr-step-elapsed"></span>
+          </li>
+          <li class="pr-progress-step" data-step="1">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Scraping website content
+            <span class="pr-step-elapsed"></span>
+          </li>
+          <li class="pr-progress-step" data-step="2">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Extracting links &amp; site structure
+            <span class="pr-step-elapsed"></span>
+          </li>
+          <li class="pr-progress-step" data-step="3">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Mapping all site pages
+            <span class="pr-step-elapsed"></span>
+          </li>
+          <li class="pr-progress-step" data-step="4">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Running AI-powered analysis
+            <span class="pr-step-elapsed"></span>
+          </li>
+          <li class="pr-progress-step" data-step="5">
+            <span class="pr-step-indicator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg></span>
+            Generating report &amp; sending email
+            <span class="pr-step-elapsed"></span>
+          </li>
+        </ul>
       </div>
 
       <!-- Success state -->
@@ -525,6 +553,7 @@
         <div class="w-16 h-16 rounded-full bg-[#4148FF] text-white flex items-center justify-center mx-auto mb-6">
           <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
         </div>
+        <p id="prSuccessUrl" class="font-jetbrains text-xs text-[#4148FF] mb-3 opacity-70" style="letter-spacing:-0.02em;"></p>
         <h3 class="font-jetbrains font-bold text-2xl md:text-3xl text-[#1A1A1A] mb-3" style="letter-spacing:-0.05em;word-spacing:-0.2em;">You're in the queue.</h3>
         <p class="font-dm-sans text-base md:text-lg text-gray-600 mb-4 max-w-sm mx-auto" style="letter-spacing:-0.05em;">Your AI Readiness report is being generated. Check your inbox — it'll be there within minutes.</p>
         <p class="font-garamond italic text-base text-gray-400">While you wait, identify the pages that drive the most revenue. Those are the ones that need attention first.</p>
